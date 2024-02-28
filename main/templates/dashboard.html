@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock title %}
+{% block content %}
+{% if user.is_authenticated %}
+Hi {{ user.username }}!
+
+<ul>
+    {% for short_url in short_urls %}
+        <li><a href="{{ short_url.original_url }}">{{ short_url.original_url }}</a> - Short URL: <a href="{{ root_url }}{{ short_url.short_url }}">{{ root_url }}{{ short_url.short_url }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+{% endblock content %}
