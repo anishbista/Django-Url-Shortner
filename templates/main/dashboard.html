@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+{% if user.is_authenticated %}
+<p>Hi {{ user.username }}!</p>
+
+{% if short_urls %}
+<ul>
+    <table>
+        <thead>
+          <tr>
+            <th>Original URL</th>
+            <th>Short URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for short_url in short_urls %}
+          <tr>
+            <td><a href="{{ short_url.original_url }}">{{ short_url.original_url }}</a></td>
+            <td><a href="{% url "redirect_to_original_url" short_url.short_url %}">{{ root_url }}{{ short_url.short_url }}</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</ul>
+
+    {% else %}
+        <p>Sorry! There are no URLs</p>
+{% endif %}
+
+{% endif %}
+{% endblock content %}

@@ -2,24 +2,40 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import ShortUrl
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
 
 
 class ShortUrlView(LoginRequiredMixin, View):
     def post(self, request):
         original_url = request.POST.get("original_url")
         user = request.user
-        short_url = ShortUrl.objects.create(user=user, original_url=original_url)
+        existing_url = ShortUrl.objects.filter(original_url=original_url).first()
+        if existing_url:
+            messages.error(request, "URL already exists.")
+        else:
+            short_url = ShortUrl.objects.create(user=user, original_url=original_url)
         return redirect("dashboard")
 
     def get(self, request):
-        return render(request, "short_url.html")
+        return render(request, "main/shorten_url.html")
 
 
 class DashboardView(LoginRequiredMixin, View):
+    def post(self, request):
+
+        return redirect("dashboard")
+
     def get(self, request):
-        short_urls = ShortUrl.objects.filter(user=request.user)
+        short_urls = ShortUrl.objects.all()
         context = {
             "short_urls": short_urls,
             "root_url": request.build_absolute_uri("/"),
         }
-        return render(request, "dashboard.html", context)
+        return render(request, "main/dashboard.html", context)
+
+
+class RedirectOriginalURLVIew(View):
+    def get(self, request, short_url):
+        shortened_url = get_object_or_404(ShortUrl, short_url=short_url)
+        return redirect(shortened_url.original_url)
