@@ -12,7 +12,11 @@ class ShortUrlView(LoginRequiredMixin, View):
         user = request.user
         existing_url = ShortUrl.objects.filter(original_url=original_url).first()
         if existing_url:
-            messages.error(request, "URL already exists.")
+            short_url = request.build_absolute_uri("/") + existing_url.short_url
+            messages.error(
+                request,
+                f"URL already exists. It is {short_url}",
+            )
         else:
             short_url = ShortUrl.objects.create(user=user, original_url=original_url)
         return redirect("dashboard")

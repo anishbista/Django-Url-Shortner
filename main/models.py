@@ -14,7 +14,8 @@ class ShortUrl(models.Model):
         return self.original_url
 
     def save(self, *args, **kwargs):
-        self.short_url = self.generate_short_url()
+        if not self.pk:
+            self.short_url = self.generate_short_url()
         return super().save(*args, **kwargs)
 
     def generate_short_url(self):
